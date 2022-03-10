@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export default class API {
-    static URL='https://sms-gw.playcus.com/api'
+    static URL='https://api.sms-gw.playcus.com/api'
 
     static getToken(){
         return localStorage.getItem('token')
