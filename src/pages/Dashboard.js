@@ -1,14 +1,9 @@
 import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import API from "../API";
-import {useEffect, useState} from "react";
+import {DataGrid} from "@mui/x-data-grid";
+import {Box} from "@mui/material";
 
 export default function Dashboard() {
     const navigate = useNavigate()
@@ -22,58 +17,55 @@ export default function Dashboard() {
         response.then((value) => {
             let mess = []
             value.data.map((message) => {
-                const date= new Date(message.receivedAt)
-                message.receivedAt =date.toUTCString()
+                const date = new Date(message.receivedAt)
+                message.receivedAt = date.toUTCString()
                 mess.push(message)
             })
-            setMessages(mess)
+            setMessages(mess.reverse())
         }, (reason) => {
             console.error(reason)
         })
     }, []);
+    /*fromNumber: "+18339510147"
+    id: 28
+    receivedAt: "Fri, 25 Mar 2022 08:20:54 GMT"
+    text: "G-537982 is your Google verification code."
+    toNumber: "+16062038541"
+    * */
+    const columns = [
+        {
+            field: 'receivedAt',
+            headerName: 'Date',
+            flex: 0.35,
+            editable: false,
+        },
+        {
+            field: 'fromNumber',
+            headerName: 'From',
+            flex: 0.25,
+            editable: false,
+        },
+        {
+            field: 'text',
+            headerName: 'Message',
+            flex: 1,
+            editable: false,
+        },
+    ]
 
     return (
-        <TableContainer component={Paper}>
-            <Table sx={{minWidth: 650}} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell
-                            sx={{
-                                fontWeight: "bold"
-                            }}
-                        >#</TableCell>
-                        <TableCell
-                            sx={{
-                                fontWeight: "bold"
-                            }}
-                        >Date</TableCell>
-                        <TableCell
-                            sx={{
-                                fontWeight: "bold"
-                            }}
-                        >From</TableCell>
-                        <TableCell
-                            sx={{
-                                fontWeight: "bold"
-                            }}
-                        >Message</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {messages.map((message, index) => (
-                        <TableRow key={index}>
-                            <TableCell>{index+1}</TableCell>
-                            <TableCell>{message.receivedAt}</TableCell>
-                            <TableCell>{message.fromNumber}</TableCell>
-                            <TableCell
-                                sx={{
-                                    width: "65%"
-                                }}
-                            >{message.text}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <Box
+            sx={{
+                height:650
+            }}
+        >
+            <DataGrid
+                rows={messages}
+                columns={columns}
+                pageSize={10}
+                rowsPerPageOptions={[10,20,50,100]}
+                disableSelectionOnClick
+            />
+        </Box>
     );
 }
